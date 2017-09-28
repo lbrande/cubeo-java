@@ -45,18 +45,23 @@ public class Board {
   }
 
   public boolean legalToMove(Pos pos) {
-    Die die = dice.remove(pos);
+    Set<Pos> otherPositions =
+        dice.keySet()
+            .stream()
+            .filter(otherPos -> !otherPos.equals(pos))
+            .collect(Collectors.toSet());
     ArrayList<Pos> reachedPositions = new ArrayList<>();
-    reachedPositions.add(dice.keySet().stream().findAny().orElseThrow(IllegalStateException::new));
+    reachedPositions.add(otherPositions.stream().findAny().orElseThrow(IllegalStateException::new));
     for (int i = 0; i < reachedPositions.size(); i++) {
       reachedPositions.addAll(
           adjacentPositions(reachedPositions.get(i))
               .stream()
-              .filter(adjacentPos -> dice.containsKey(pos) && !reachedPositions.contains(pos))
+              .filter(
+                  adjacentPos ->
+                      otherPositions.contains(adjacentPos) && !reachedPositions.contains(adjacentPos))
               .collect(Collectors.toList()));
     }
-    dice.put(pos, die);
-    return reachedPositions.size() == dice.size() - 1;
+    return reachedPositions.size() == otherPositions.size();
   }
 
   public Set<Pos> legalAddPositions(Color color) {
@@ -83,14 +88,13 @@ public class Board {
         .stream()
         .filter(die -> die.getColor() == color && legalToMove(die.getPos()))
         .forEach(
-            die -> {
-              legalMerges.put(
-                  die.getPos(),
-                  adjacentPositions(die.getPos())
-                      .stream()
-                      .filter(pos -> dice.containsKey(pos) && dice.get(pos).getColor() == color)
-                      .collect(Collectors.toSet()));
-            });
+            die ->
+                legalMerges.put(
+                    die.getPos(),
+                    adjacentPositions(die.getPos())
+                        .stream()
+                        .filter(pos -> dice.containsKey(pos) && dice.get(pos).getColor() == color)
+                        .collect(Collectors.toSet())));
     return legalMerges;
   }
 }
