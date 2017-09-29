@@ -5,6 +5,9 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/cubeo.iml" filepath="$PROJECT_DIR$/.idea/modules/cubeo.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/cubeo_main.iml" filepath="$PROJECT_DIR$/.idea/modules/cubeo_main.iml" group="cubeo" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/cubeo_test.iml" filepath="$PROJECT_DIR$/.idea/modules/cubeo_test.iml" group="cubeo" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gui/gui.iml" filepath="$PROJECT_DIR$/.idea/modules/gui/gui.iml" group="gui" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gui/gui_main.iml" filepath="$PROJECT_DIR$/.idea/modules/gui/gui_main.iml" group="gui" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gui/gui_test.iml" filepath="$PROJECT_DIR$/.idea/modules/gui/gui_test.iml" group="gui" />
     </modules>
   </component>
 </project>
