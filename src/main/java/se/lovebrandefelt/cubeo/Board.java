@@ -24,27 +24,21 @@ public class Board {
 
   public void add(Color color, Pos pos) {
     Die die = new Die(color, pos);
-    if (dice.isEmpty()) {
-      topLeft = pos;
-      bottomRight = pos;
-    } else {
-      topLeft = new Pos(Math.min(pos.getX(), topLeft.getX()), Math.min(pos.getY(), topLeft.getY()));
-      bottomRight =
-          new Pos(
-              Math.max(pos.getX(), bottomRight.getX()), Math.max(pos.getY(), bottomRight.getY()));
-    }
     dice.put(pos, die);
+    updateBounds();
   }
 
   public void merge(Pos from, Pos to) {
     Die resultDie = dice.get(to);
     resultDie.setDots(resultDie.getDots() + dice.get(from).getDots());
     dice.remove(from);
+    updateBounds();
   }
 
   public void move(Pos from, Pos to) {
-    dice.put(to, dice.get(from));
-    dice.remove(from);
+    dice.put(to, dice.remove(from));
+    dice.get(to).setPos(to);
+    updateBounds();
   }
 
   public Set<Pos> adjacentPositions(Pos pos) {
@@ -78,21 +72,24 @@ public class Board {
   }
 
   public Set<Pos> legalAddPositions(Color color) {
-    return dice.values()
-        .stream()
-        .filter(die -> die.getColor() == color)
-        .flatMap(die -> adjacentPositions(die.getPos()).stream())
-        .distinct()
-        .filter(
-            pos ->
-                !dice.containsKey(pos)
-                    && adjacentPositions(pos)
-                        .stream()
-                        .noneMatch(
-                            adjacentPos ->
-                                dice.containsKey(adjacentPos)
-                                    && dice.get(adjacentPos).getColor() != color))
-        .collect(Collectors.toSet());
+    if (dice.values().stream().filter(die -> die.getColor() == color).count() < 6) {
+      return dice.values()
+          .stream()
+          .filter(die -> die.getColor() == color)
+          .flatMap(die -> adjacentPositions(die.getPos()).stream())
+          .distinct()
+          .filter(
+              pos ->
+                  !dice.containsKey(pos)
+                      && adjacentPositions(pos)
+                      .stream()
+                      .noneMatch(
+                          adjacentPos ->
+                              dice.containsKey(adjacentPos)
+                                  && dice.get(adjacentPos).getColor() != color))
+          .collect(Collectors.toSet());
+    }
+    return new HashSet<>();
   }
 
   public Map<Pos, Set<Pos>> legalMerges(Color color) {
@@ -101,13 +98,16 @@ public class Board {
         .stream()
         .filter(die -> die.getColor() == color && legalToMove(die.getPos()))
         .forEach(
-            die ->
-                legalMerges.put(
-                    die.getPos(),
-                    adjacentPositions(die.getPos())
-                        .stream()
-                        .filter(pos -> dice.containsKey(pos) && dice.get(pos).getColor() == color)
-                        .collect(Collectors.toSet())));
+            die -> {
+              Set<Pos> legalDestinations =
+                  adjacentPositions(die.getPos())
+                      .stream()
+                      .filter(pos -> dice.containsKey(pos) && dice.get(pos).getColor() == color)
+                      .collect(Collectors.toSet());
+              if (legalDestinations.size() > 0) {
+                legalMerges.put(die.getPos(), legalDestinations);
+              }
+            });
     return legalMerges;
   }
 
@@ -132,9 +132,29 @@ public class Board {
                         .flatMap(pos -> legalDestinations(pos, otherPositions).stream())
                         .collect(Collectors.toSet());
               }
-              legalMoves.put(die.getPos(), legalDestinations);
+              if (legalDestinations.size() > 0) {
+                legalMoves.put(die.getPos(), legalDestinations);
+              }
             });
     return legalMoves;
+  }
+
+  public Set<Pos> legalFroms(Color color) {
+    Set<Pos> legalFroms = new HashSet<>(legalMerges(color).keySet());
+    legalFroms.addAll(legalMoves(color).keySet());
+    return legalFroms;
+  }
+
+  public Set<Pos> legalTos(Pos from) {
+    Color color = dice.get(from).getColor();
+    Set<Pos> legalTos = new HashSet<>();
+    if (legalMerges(color).containsKey(from)) {
+      legalTos.addAll(legalMerges(color).get(from));
+    }
+    if (legalMoves(color).containsKey(from)) {
+      legalTos.addAll(legalMoves(color).get(from));
+    }
+    return legalTos;
   }
 
   public Set<Pos> legalDestinations(Pos pos, Set<Pos> otherPositions) {
@@ -180,6 +200,23 @@ public class Board {
       legalDestinations.add(east);
     }
     return legalDestinations;
+  }
+
+  public void updateBounds() {
+    topLeft =
+        dice.keySet()
+            .stream()
+            .reduce(
+                (pos1, pos2) ->
+                    new Pos(Math.min(pos1.getX(), pos2.getX()), Math.min(pos1.getY(), pos2.getY())))
+            .orElseThrow(IllegalStateException::new);
+    bottomRight =
+        dice.keySet()
+            .stream()
+            .reduce(
+                (pos1, pos2) ->
+                    new Pos(Math.max(pos1.getX(), pos2.getX()), Math.max(pos1.getY(), pos2.getY())))
+            .orElseThrow(IllegalStateException::new);
   }
 
   public Map<Pos, Die> getDice() {
