@@ -62,7 +62,7 @@ public class BoardTest {
     assertEquals(1, legalMoves.size());
     assertTrue(legalMoves.containsKey(new Pos(0, 1)));
     assertEquals(
-        Stream.of(new Pos(-1, -1), new Pos(0, 1), new Pos(1, -1)).collect(Collectors.toSet()),
+        Stream.of(new Pos(-1, -1), new Pos(1, -1)).collect(Collectors.toSet()),
         legalMoves.get(new Pos(0, 1)));
   }
 }
