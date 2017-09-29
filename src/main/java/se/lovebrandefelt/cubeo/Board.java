@@ -132,6 +132,7 @@ public class Board {
                         .flatMap(pos -> legalDestinations(pos, otherPositions).stream())
                         .collect(Collectors.toSet());
               }
+              legalDestinations.remove(die.getPos());
               if (legalDestinations.size() > 0) {
                 legalMoves.put(die.getPos(), legalDestinations);
               }
