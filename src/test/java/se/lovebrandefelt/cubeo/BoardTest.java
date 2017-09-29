@@ -26,8 +26,8 @@ public class BoardTest {
     Board board = new Board();
     Set<Pos> legalAddPositions = board.legalAddPositions(RED);
     assertEquals(
-        legalAddPositions,
-        Stream.of(new Pos(-1, 0), new Pos(1, 0), new Pos(0, 1)).collect(Collectors.toSet()));
+        Stream.of(new Pos(-1, 0), new Pos(1, 0), new Pos(0, 1)).collect(Collectors.toSet()),
+        legalAddPositions);
   }
 
   @Test
@@ -36,7 +36,33 @@ public class BoardTest {
     board.add(RED, new Pos(0, 1));
     Map<Pos, Set<Pos>> legalMerges = board.legalMerges(RED);
     assertEquals(1, legalMerges.size());
-    assertEquals(1, legalMerges.get(new Pos(0, 1)).size());
-    assertTrue(legalMerges.get(new Pos(0, 1)).contains(new Pos(0, 0)));
+    assertTrue(legalMerges.containsKey(new Pos(0, 1)));
+    assertEquals(
+        Stream.of(new Pos(0, 0)).collect(Collectors.toSet()),
+        legalMerges.get(new Pos(0, 1)));
+  }
+
+  @Test
+  void legalMovesTest() {
+    Board board = new Board();
+    Map<Pos, Set<Pos>> legalMoves = board.legalMoves(RED);
+    assertEquals(1, legalMoves.size());
+    assertTrue(legalMoves.containsKey(new Pos(0, 0)));
+    assertEquals(
+        Stream.of(new Pos(-1, -1), new Pos(1, -1)).collect(Collectors.toSet()),
+        legalMoves.get(new Pos(0, 0)));
+  }
+
+  @Test
+  void legalMovesWith2DotsTest() {
+    Board board = new Board();
+    board.add(RED, new Pos(0, 1));
+    board.getDice().get(new Pos(0, 1)).setDots(2);
+    Map<Pos, Set<Pos>> legalMoves = board.legalMoves(RED);
+    assertEquals(1, legalMoves.size());
+    assertTrue(legalMoves.containsKey(new Pos(0, 1)));
+    assertEquals(
+        Stream.of(new Pos(-1, -1), new Pos(0, 1), new Pos(1, -1)).collect(Collectors.toSet()),
+        legalMoves.get(new Pos(0, 1)));
   }
 }

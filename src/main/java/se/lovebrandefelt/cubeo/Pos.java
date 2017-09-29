@@ -41,4 +41,9 @@ public class Pos {
     result = 31 * result + y;
     return result;
   }
+
+  @Override
+  public String toString() {
+    return "Pos{" + "x=" + x + ", y=" + y + '}';
+  }
 }
