@@ -36,6 +36,17 @@ public class Board {
     dice.put(pos, die);
   }
 
+  public void merge(Pos from, Pos to) {
+    Die resultDie = dice.get(to);
+    resultDie.setDots(resultDie.getDots() + dice.get(from).getDots());
+    dice.remove(from);
+  }
+
+  public void move(Pos from, Pos to) {
+    dice.put(to, dice.get(from));
+    dice.remove(from);
+  }
+
   public Set<Pos> adjacentPositions(Pos pos) {
     return Stream.of(
             pos.offsetBy(new Pos(-1, 0)),
@@ -128,49 +139,45 @@ public class Board {
 
   public Set<Pos> legalDestinations(Pos pos, Set<Pos> otherPositions) {
     Set<Pos> legalDestinations = new HashSet<>();
-    Pos nw = pos.offsetBy(new Pos(-1, -1));
-    Pos n = pos.offsetBy(new Pos(0, -1));
-    Pos ne = pos.offsetBy(new Pos(1, -1));
-    Pos w = pos.offsetBy(new Pos(-1, 0));
-    Pos e = pos.offsetBy(new Pos(1, 0));
-    Pos sw = pos.offsetBy(new Pos(-1, 1));
-    Pos s = pos.offsetBy(new Pos(0, 1));
-    Pos se = pos.offsetBy(new Pos(1, 1));
-    if (!otherPositions.contains(nw)
-        && (otherPositions.contains(n) != otherPositions.contains(w))) {
-      legalDestinations.add(nw);
+    Pos northWest = pos.offsetBy(new Pos(-1, -1));
+    boolean northWestExists = otherPositions.contains(northWest);
+    Pos north = pos.offsetBy(new Pos(0, -1));
+    boolean northExists = otherPositions.contains(north);
+    Pos northEast = pos.offsetBy(new Pos(1, -1));
+    boolean northEastExists = otherPositions.contains(northEast);
+    Pos west = pos.offsetBy(new Pos(-1, 0));
+    boolean westExists = otherPositions.contains(west);
+    Pos east = pos.offsetBy(new Pos(1, 0));
+    boolean eastExists = otherPositions.contains(east);
+    Pos southWest = pos.offsetBy(new Pos(-1, 1));
+    boolean southWestExists = otherPositions.contains(southWest);
+    Pos south = pos.offsetBy(new Pos(0, 1));
+    boolean southExists = otherPositions.contains(south);
+    Pos southEast = pos.offsetBy(new Pos(1, 1));
+    boolean southEastExists = otherPositions.contains(southEast);
+    if (!northWestExists && (northExists != westExists)) {
+      legalDestinations.add(northWest);
     }
-    if (!otherPositions.contains(ne)
-        && (otherPositions.contains(n) != otherPositions.contains(e))) {
-      legalDestinations.add(ne);
+    if (!northEastExists && (northExists != eastExists)) {
+      legalDestinations.add(northEast);
     }
-    if (!otherPositions.contains(sw)
-        && (otherPositions.contains(s) != otherPositions.contains(w))) {
-      legalDestinations.add(sw);
+    if (!southWestExists && (southExists != westExists)) {
+      legalDestinations.add(southWest);
     }
-    if (!otherPositions.contains(se)
-        && (otherPositions.contains(s) != otherPositions.contains(e))) {
-      legalDestinations.add(se);
+    if (!southEastExists && (southExists != eastExists)) {
+      legalDestinations.add(southEast);
     }
-    if (!otherPositions.contains(n)
-        && ((otherPositions.contains(nw) && otherPositions.contains(w))
-        || (otherPositions.contains(ne) && otherPositions.contains(e)))) {
-      legalDestinations.add(n);
+    if (!northExists && ((northWestExists && westExists) || (northEastExists && eastExists))) {
+      legalDestinations.add(north);
     }
-    if (!otherPositions.contains(s)
-        && ((otherPositions.contains(sw) && otherPositions.contains(w))
-        || (otherPositions.contains(se) && otherPositions.contains(se)))) {
-      legalDestinations.add(s);
+    if (!southExists && ((southWestExists && westExists) || (southEastExists && southEastExists))) {
+      legalDestinations.add(south);
     }
-    if (!otherPositions.contains(w)
-        && ((otherPositions.contains(nw) && otherPositions.contains(n))
-        || (otherPositions.contains(sw) && otherPositions.contains(s)))) {
-      legalDestinations.add(w);
+    if (!westExists && ((northWestExists && northExists) || (southWestExists && southExists))) {
+      legalDestinations.add(west);
     }
-    if (!otherPositions.contains(e)
-        && ((otherPositions.contains(ne) && otherPositions.contains(n))
-        || (otherPositions.contains(se) && otherPositions.contains(s)))) {
-      legalDestinations.add(e);
+    if (!eastExists && ((northEastExists && northExists) || (southEastExists && southExists))) {
+      legalDestinations.add(east);
     }
     return legalDestinations;
   }
