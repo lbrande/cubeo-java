@@ -7,4 +7,8 @@ public enum Color {
   public Color next() {
     return Color.values()[(ordinal() + 1) % values().length];
   }
+
+  public Color last() {
+    return Color.values()[(ordinal() + values().length - 1) % values().length];
+  }
 }

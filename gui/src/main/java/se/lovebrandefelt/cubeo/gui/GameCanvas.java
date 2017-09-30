@@ -246,7 +246,7 @@ public class GameCanvas extends Canvas {
       if (selectedFrom == null) {
         if (game.performAction(new AddAction(game.getCurrentPlayer(), pos))) {
           if (game.getResult() == null && game.getCurrentPlayer() != RED) {
-            ai.performAction(game);
+            ai.performAction(game, game.getCurrentPlayer());
           }
         } else if (game.getBoard()
             .legalActions(game.getCurrentPlayer())
@@ -258,7 +258,7 @@ public class GameCanvas extends Canvas {
         if (game.performAction(new MergeAction(selectedFrom, pos))
             || game.performAction(new MoveAction(selectedFrom, pos))) {
           if (game.getResult() == null && game.getCurrentPlayer() != RED) {
-            ai.performAction(game);
+            ai.performAction(game, game.getCurrentPlayer());
           }
         }
         selectedFrom = null;

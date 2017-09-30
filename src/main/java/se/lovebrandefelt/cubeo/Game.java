@@ -25,6 +25,11 @@ public class Game {
     return false;
   }
 
+  public void undoAction() {
+    board.undoAction();
+    currentPlayer = currentPlayer.last();
+  }
+
   private void nextTurn() {
     if (board.getDice().values().stream().anyMatch(die -> die.getDots() > 6)) {
       if (currentPlayer == RED) {

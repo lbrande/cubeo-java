@@ -3,8 +3,8 @@ package se.lovebrandefelt.cubeo;
 public class RandomAI implements AI {
 
   @Override
-  public void performAction(Game game) {
+  public void performAction(Game game, Color player) {
     game.performAction(
-        game.getBoard().legalActions(game.getCurrentPlayer()).stream().findAny().get());
+        game.getBoard().legalActions(player).stream().findAny().get());
   }
 }
