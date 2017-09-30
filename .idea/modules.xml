@@ -2,12 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/cubeo.iml" filepath="$PROJECT_DIR$/.idea/modules/cubeo.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/cubeo_main.iml" filepath="$PROJECT_DIR$/.idea/modules/cubeo_main.iml" group="cubeo" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/cubeo_test.iml" filepath="$PROJECT_DIR$/.idea/modules/cubeo_test.iml" group="cubeo" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gui/gui.iml" filepath="$PROJECT_DIR$/.idea/modules/gui/gui.iml" group="gui" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gui/gui_main.iml" filepath="$PROJECT_DIR$/.idea/modules/gui/gui_main.iml" group="gui" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gui/gui_test.iml" filepath="$PROJECT_DIR$/.idea/modules/gui/gui_test.iml" group="gui" />
+      <module fileurl="file://$PROJECT_DIR$/android/android.iml" filepath="$PROJECT_DIR$/android/android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cubeo.iml" filepath="$PROJECT_DIR$/cubeo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gui/gui.iml" filepath="$PROJECT_DIR$/.idea/modules/gui/gui.iml" />
     </modules>
   </component>
 </project>

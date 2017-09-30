@@ -1,5 +1,7 @@
 package se.lovebrandefelt.cubeo.gui;
 
+import static javafx.scene.text.FontWeight.BOLD;
+import static se.lovebrandefelt.cubeo.Color.BLACK;
 import static se.lovebrandefelt.cubeo.Color.RED;
 
 import javafx.geometry.VPos;
@@ -9,9 +11,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
+import se.lovebrandefelt.cubeo.AI;
 import se.lovebrandefelt.cubeo.Die;
 import se.lovebrandefelt.cubeo.Game;
 import se.lovebrandefelt.cubeo.Pos;
+import se.lovebrandefelt.cubeo.RandomAI;
 
 public class GameCanvas extends Canvas {
   private static final Color BACKGROUND_COLOR = Color.DARKGREEN;
@@ -25,8 +29,11 @@ public class GameCanvas extends Canvas {
   private static final Color SELECTED_BORDER_COLOR = Color.YELLOW;
   private static final double squareSize = 75;
   private static final double fillSquareSize = squareSize - 4;
+  private static final double dotSize = fillSquareSize / 5;
+  private static final double fontSize = fillSquareSize * 2 / 3;
 
   private Game game;
+  private AI ai;
   private Pos selectedFrom;
   private double startX;
   private double startY;
@@ -34,8 +41,9 @@ public class GameCanvas extends Canvas {
 
   public GameCanvas() {
     super();
+    ai = new RandomAI();
     graphicsContext = getGraphicsContext2D();
-    graphicsContext.setFont(Font.font(squareSize / 2));
+    graphicsContext.setFont(Font.font(null, BOLD, fontSize));
     graphicsContext.setTextAlign(TextAlignment.CENTER);
     graphicsContext.setTextBaseline(VPos.CENTER);
   }
@@ -164,10 +172,10 @@ public class GameCanvas extends Canvas {
   public void drawDot(double squareX, double squareY, int dotX, int dotY) {
     graphicsContext.setFill(DOT_COLOR);
     graphicsContext.fillOval(
-        squareX + fillSquareSize * dotX / 4 - fillSquareSize / 15,
-        squareY + fillSquareSize * dotY / 4 - fillSquareSize / 15,
-        fillSquareSize / 7.5,
-        fillSquareSize / 7.5);
+        squareX + fillSquareSize * dotX / 4 - dotSize / 2,
+        squareY + fillSquareSize * dotY / 4 - dotSize / 2,
+        dotSize,
+        dotSize);
   }
 
   public void updateCenter() {
@@ -219,20 +227,19 @@ public class GameCanvas extends Canvas {
       if (selectedFrom == null) {
         if (game.getBoard().legalAddPositions(game.getCurrentPlayer()).contains(pos)) {
           game.add(pos);
-          selectedFrom = null;
+          if (game.getCurrentPlayer() != RED) {
+            ai.performTurn(game, BLACK);
+          }
         } else if (game.getBoard().legalFroms(game.getCurrentPlayer()).contains(pos)) {
           selectedFrom = pos;
         }
       } else {
         if (game.getBoard().legalTos(selectedFrom).contains(pos)) {
-          if (game.getBoard().legalMerges(game.getCurrentPlayer()).containsKey(selectedFrom)
-              && game.getBoard()
-              .legalMerges(game.getCurrentPlayer())
-              .get(selectedFrom)
-              .contains(pos)) {
-            game.merge(selectedFrom, pos);
-          } else {
+          if (!game.merge(selectedFrom, pos)) {
             game.move(selectedFrom, pos);
+          }
+          if (game.getCurrentPlayer() != RED) {
+            ai.performTurn(game, BLACK);
           }
         }
         selectedFrom = null;

@@ -19,27 +19,33 @@ public class Game {
     currentPlayer = RED;
   }
 
-  public void add(Pos pos) {
+  public boolean add(Pos pos) {
     if (board.legalAddPositions(currentPlayer).contains(pos)) {
       board.add(currentPlayer, pos);
       nextTurn();
+      return true;
     }
+    return false;
   }
 
-  public void merge(Pos from, Pos to) {
+  public boolean merge(Pos from, Pos to) {
     Map<Pos, Set<Pos>> legalMerges = board.legalMerges(currentPlayer);
     if (legalMerges.containsKey(from) && legalMerges.get(from).contains(to)) {
       board.merge(from, to);
       nextTurn();
+      return true;
     }
+    return false;
   }
 
-  public void move(Pos from, Pos to) {
+  public boolean move(Pos from, Pos to) {
     Map<Pos, Set<Pos>> legalMoves = board.legalMoves(currentPlayer);
     if (legalMoves.containsKey(from) && legalMoves.get(from).contains(to)) {
       board.move(from, to);
       nextTurn();
+      return true;
     }
+    return false;
   }
 
   private void nextTurn() {
