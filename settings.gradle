@@ -1,3 +1,2 @@
-include ':android'
-rootProject.name = 'cubeo'
 include 'gui'
+include ':android'

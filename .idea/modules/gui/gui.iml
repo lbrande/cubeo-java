@@ -14,8 +14,8 @@
     </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
-    <output url="file://$MODULE_DIR$/../../../gui/build/classes/main" />
-    <output-test url="file://$MODULE_DIR$/../../../gui/build/classes/test" />
+    <output url="file://$MODULE_DIR$/../../../gui/build/classes/java/main" />
+    <output-test url="file://$MODULE_DIR$/../../../gui/build/classes/java/test" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../../gui">
       <sourceFolder url="file://$MODULE_DIR$/../../../gui/src/main/java" isTestSource="false" />
@@ -32,12 +32,12 @@
     <orderEntry type="module" module-name="cubeo" exported="" />
     <orderEntry type="library" exported="" scope="TEST" name="junit-jupiter-api-5.0.0-RC3" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="junit-platform-runner-1.0.0-RC3" level="project" />
-    <orderEntry type="library" exported="" scope="TEST" name="opentest4j-1.0.0-RC1" level="project" />
-    <orderEntry type="library" exported="" scope="TEST" name="junit-platform-commons-1.0.0-RC3" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="junit-platform-launcher-1.0.0-RC3" level="project" />
-    <orderEntry type="library" exported="" scope="TEST" name="junit-platform-suite-api-1.0.0-RC3" level="project" />
-    <orderEntry type="library" exported="" scope="TEST" name="junit-4.12" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="junit-platform-engine-1.0.0-RC3" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="opentest4j-1.0.0-RC1" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="junit-platform-suite-api-1.0.0-RC3" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="junit-platform-commons-1.0.0-RC3" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="junit-4.12" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="hamcrest-core-1.3" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="junit-jupiter-engine-5.0.0-RC3" level="project" />
   </component>

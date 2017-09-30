@@ -3,6 +3,10 @@ version '1.0-SNAPSHOT'
 buildscript {
     repositories {
         mavenCentral()
+        jcenter()
+        maven {
+            url "https://maven.google.com"
+        }
     }
     ext {
         junitVersion = '5.0.0-RC3'
@@ -27,6 +31,10 @@ dependencies {
 allprojects {
     repositories {
         mavenCentral()
+        jcenter()
+        maven {
+            url "https://maven.google.com"
+        }
     }
 
     apply plugin: 'checkstyle'
