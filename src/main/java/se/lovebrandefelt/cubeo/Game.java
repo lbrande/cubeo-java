@@ -6,9 +6,6 @@ import static se.lovebrandefelt.cubeo.GameResult.BLACK_WON_BY_STALEMATE;
 import static se.lovebrandefelt.cubeo.GameResult.RED_WON_BY_7_PLUS_MERGE;
 import static se.lovebrandefelt.cubeo.GameResult.RED_WON_BY_STALEMATE;
 
-import java.util.Map;
-import java.util.Set;
-
 public class Game {
   private Board board;
   private Color currentPlayer;
@@ -19,29 +16,9 @@ public class Game {
     currentPlayer = RED;
   }
 
-  public boolean add(Pos pos) {
-    if (board.legalAddPositions(currentPlayer).contains(pos)) {
-      board.add(currentPlayer, pos);
-      nextTurn();
-      return true;
-    }
-    return false;
-  }
-
-  public boolean merge(Pos from, Pos to) {
-    Map<Pos, Set<Pos>> legalMerges = board.legalMerges(currentPlayer);
-    if (legalMerges.containsKey(from) && legalMerges.get(from).contains(to)) {
-      board.merge(from, to);
-      nextTurn();
-      return true;
-    }
-    return false;
-  }
-
-  public boolean move(Pos from, Pos to) {
-    Map<Pos, Set<Pos>> legalMoves = board.legalMoves(currentPlayer);
-    if (legalMoves.containsKey(from) && legalMoves.get(from).contains(to)) {
-      board.move(from, to);
+  public boolean performAction(Action action) {
+    if (board.legalActions(currentPlayer).contains(action)) {
+      board.performAction(action);
       nextTurn();
       return true;
     }
@@ -57,7 +34,7 @@ public class Game {
       }
     }
     currentPlayer = currentPlayer.next();
-    if (board.legalAddPositions(currentPlayer).isEmpty() && board.legalFroms(currentPlayer).isEmpty()) {
+    if (board.legalActions(currentPlayer).isEmpty()) {
       if (currentPlayer == RED) {
         result = BLACK_WON_BY_STALEMATE;
       } else {

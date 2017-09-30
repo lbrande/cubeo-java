@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -15,29 +16,23 @@ public class Board {
   private Map<Pos, Die> dice;
   private Pos topLeft;
   private Pos bottomRight;
+  private Stack<Action> history;
 
   public Board() {
     dice = new HashMap<>();
-    add(RED, new Pos(0, 0));
-    add(BLACK, new Pos(0, -1));
+    history = new Stack<>();
+    performAction(new AddAction(RED, new Pos(0, 0)));
+    performAction(new AddAction(BLACK, new Pos(0, -1)));
   }
 
-  public void add(Color color, Pos pos) {
-    Die die = new Die(color, pos);
-    dice.put(pos, die);
+  public void performAction(Action action) {
+    action.perform(this);
+    history.add(action);
     updateBounds();
   }
 
-  public void merge(Pos from, Pos to) {
-    Die resultDie = dice.get(to);
-    resultDie.setDots(resultDie.getDots() + dice.get(from).getDots());
-    dice.remove(from);
-    updateBounds();
-  }
-
-  public void move(Pos from, Pos to) {
-    dice.put(to, dice.remove(from));
-    dice.get(to).setPos(to);
+  public void undoAction() {
+    history.pop().undo(this);
     updateBounds();
   }
 
@@ -71,7 +66,7 @@ public class Board {
     return reachedPositions.size() == otherPositions.size();
   }
 
-  public Set<Pos> legalAddPositions(Color color) {
+  public Set<AddAction> legalAddActions(Color color) {
     if (dice.values().stream().filter(die -> die.getColor() == color).count() < 6) {
       return dice.values()
           .stream()
@@ -87,13 +82,14 @@ public class Board {
                           adjacentPos ->
                               dice.containsKey(adjacentPos)
                                   && dice.get(adjacentPos).getColor() != color))
+          .map(pos -> new AddAction(color, pos))
           .collect(Collectors.toSet());
     }
     return new HashSet<>();
   }
 
-  public Map<Pos, Set<Pos>> legalMerges(Color color) {
-    Map<Pos, Set<Pos>> legalMerges = new HashMap<>();
+  public Set<MergeAction> legalMergeActions(Color color) {
+    Set<MergeAction> legalMerges = new HashSet<>();
     dice.values()
         .stream()
         .filter(die -> die.getColor() == color && legalToMove(die.getPos()))
@@ -104,15 +100,17 @@ public class Board {
                       .stream()
                       .filter(pos -> dice.containsKey(pos) && dice.get(pos).getColor() == color)
                       .collect(Collectors.toSet());
-              if (legalDestinations.size() > 0) {
-                legalMerges.put(die.getPos(), legalDestinations);
-              }
+              legalMerges.addAll(
+                  legalDestinations
+                      .stream()
+                      .map(pos -> new MergeAction(die.getPos(), pos))
+                      .collect(Collectors.toSet()));
             });
     return legalMerges;
   }
 
-  public Map<Pos, Set<Pos>> legalMoves(Color color) {
-    Map<Pos, Set<Pos>> legalMoves = new HashMap<>();
+  public Set<MoveAction> legalMoveActions(Color color) {
+    Set<MoveAction> legalMoves = new HashSet<>();
     dice.values()
         .stream()
         .filter(die -> die.getColor() == color && legalToMove(die.getPos()))
@@ -133,29 +131,28 @@ public class Board {
                         .collect(Collectors.toSet());
               }
               legalDestinations.remove(die.getPos());
-              if (legalDestinations.size() > 0) {
-                legalMoves.put(die.getPos(), legalDestinations);
-              }
+              legalMoves.addAll(
+                  legalDestinations
+                      .stream()
+                      .map(pos -> new MoveAction(die.getPos(), pos))
+                      .collect(Collectors.toSet()));
             });
     return legalMoves;
   }
 
-  public Set<Pos> legalFroms(Color color) {
-    Set<Pos> legalFroms = new HashSet<>(legalMerges(color).keySet());
-    legalFroms.addAll(legalMoves(color).keySet());
-    return legalFroms;
+  public Set<Action> legalActions(Color color) {
+    Set<Action> legalActions = new HashSet<>();
+    legalActions.addAll(legalAddActions(color));
+    legalActions.addAll(legalMergeActions(color));
+    legalActions.addAll(legalMoveActions(color));
+    return legalActions;
   }
 
-  public Set<Pos> legalTos(Pos from) {
-    Color color = dice.get(from).getColor();
-    Set<Pos> legalTos = new HashSet<>();
-    if (legalMerges(color).containsKey(from)) {
-      legalTos.addAll(legalMerges(color).get(from));
-    }
-    if (legalMoves(color).containsKey(from)) {
-      legalTos.addAll(legalMoves(color).get(from));
-    }
-    return legalTos;
+  public Set<ToAction> legalToActions(Color color) {
+    Set<ToAction> legalToActions = new HashSet<>();
+    legalToActions.addAll(legalMergeActions(color));
+    legalToActions.addAll(legalMoveActions(color));
+    return legalToActions;
   }
 
   public Set<Pos> legalDestinations(Pos pos, Set<Pos> otherPositions) {
@@ -230,5 +227,9 @@ public class Board {
 
   public Pos getBottomRight() {
     return bottomRight;
+  }
+
+  public Stack<Action> getHistory() {
+    return history;
   }
 }

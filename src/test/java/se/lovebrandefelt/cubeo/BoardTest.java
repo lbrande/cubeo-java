@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static se.lovebrandefelt.cubeo.Color.RED;
 
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -16,7 +15,7 @@ public class BoardTest {
   @Test
   void legalToMoveTest() {
     Board board = new Board();
-    board.add(RED, new Pos(0, -2));
+    board.performAction(new AddAction(RED, new Pos(0, -2)));
     assertFalse(board.legalToMove(new Pos(0, -1)));
     assertTrue(board.legalToMove(new Pos(0, -2)));
   }
@@ -24,45 +23,64 @@ public class BoardTest {
   @Test
   void legalAddPositionsTest() {
     Board board = new Board();
-    Set<Pos> legalAddPositions = board.legalAddPositions(RED);
+    Set<AddAction> legalAddActions = board.legalAddActions(RED);
     assertEquals(
-        Stream.of(new Pos(-1, 0), new Pos(1, 0), new Pos(0, 1)).collect(Collectors.toSet()),
-        legalAddPositions);
+        Stream.of(
+            new AddAction(RED, new Pos(-1, 0)),
+            new AddAction(RED, new Pos(1, 0)),
+            new AddAction(RED, new Pos(0, 1)))
+            .collect(Collectors.toSet()),
+        legalAddActions);
   }
 
   @Test
   void legalMergesTest() {
     Board board = new Board();
-    board.add(RED, new Pos(0, 1));
-    Map<Pos, Set<Pos>> legalMerges = board.legalMerges(RED);
+    board.performAction(new AddAction(RED, new Pos(0, 1)));
+    Set<MergeAction> legalMerges = board.legalMergeActions(RED);
     assertEquals(1, legalMerges.size());
-    assertTrue(legalMerges.containsKey(new Pos(0, 1)));
+    assertTrue(legalMerges.stream().anyMatch(action -> action.getFrom().equals(new Pos(0, 1))));
     assertEquals(
-        Stream.of(new Pos(0, 0)).collect(Collectors.toSet()),
-        legalMerges.get(new Pos(0, 1)));
+        Stream.of(new MergeAction(new Pos(0, 1), new Pos(0, 0))).collect(Collectors.toSet()),
+        legalMerges
+            .stream()
+            .filter(action -> action.getFrom().equals(new Pos(0, 1)))
+            .collect(Collectors.toSet()));
   }
 
   @Test
   void legalMovesTest() {
     Board board = new Board();
-    Map<Pos, Set<Pos>> legalMoves = board.legalMoves(RED);
-    assertEquals(1, legalMoves.size());
-    assertTrue(legalMoves.containsKey(new Pos(0, 0)));
+    Set<MoveAction> legalMoves = board.legalMoveActions(RED);
+    assertEquals(2, legalMoves.size());
+    assertTrue(legalMoves.stream().anyMatch(action -> action.getFrom().equals(new Pos(0, 0))));
     assertEquals(
-        Stream.of(new Pos(-1, -1), new Pos(1, -1)).collect(Collectors.toSet()),
-        legalMoves.get(new Pos(0, 0)));
+        Stream.of(
+            new MoveAction(new Pos(0, 0), new Pos(-1, -1)),
+            new MoveAction(new Pos(0, 0), new Pos(1, -1)))
+            .collect(Collectors.toSet()),
+        legalMoves
+            .stream()
+            .filter(action -> action.getFrom().equals(new Pos(0, 0)))
+            .collect(Collectors.toSet()));
   }
 
   @Test
   void legalMovesWith2DotsTest() {
     Board board = new Board();
-    board.add(RED, new Pos(0, 1));
+    board.performAction(new AddAction(RED, new Pos(0, 1)));
     board.getDice().get(new Pos(0, 1)).setDots(2);
-    Map<Pos, Set<Pos>> legalMoves = board.legalMoves(RED);
-    assertEquals(1, legalMoves.size());
-    assertTrue(legalMoves.containsKey(new Pos(0, 1)));
+    Set<MoveAction> legalMoves = board.legalMoveActions(RED);
+    assertEquals(2, legalMoves.size());
+    assertTrue(legalMoves.stream().anyMatch(action -> action.getFrom().equals(new Pos(0, 1))));
     assertEquals(
-        Stream.of(new Pos(-1, -1), new Pos(1, -1)).collect(Collectors.toSet()),
-        legalMoves.get(new Pos(0, 1)));
+        Stream.of(
+            new MoveAction(new Pos(0, 1), new Pos(-1, -1)),
+            new MoveAction(new Pos(0, 1), new Pos(1, -1)))
+            .collect(Collectors.toSet()),
+        legalMoves
+            .stream()
+            .filter(action -> action.getFrom().equals(new Pos(0, 1)))
+            .collect(Collectors.toSet()));
   }
 }

@@ -1,9 +1,9 @@
 package se.lovebrandefelt.cubeo.gui;
 
 import static javafx.scene.text.FontWeight.BOLD;
-import static se.lovebrandefelt.cubeo.Color.BLACK;
 import static se.lovebrandefelt.cubeo.Color.RED;
 
+import java.util.stream.Collectors;
 import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -12,10 +12,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import se.lovebrandefelt.cubeo.AI;
+import se.lovebrandefelt.cubeo.AddAction;
 import se.lovebrandefelt.cubeo.Die;
 import se.lovebrandefelt.cubeo.Game;
+import se.lovebrandefelt.cubeo.MergeAI;
+import se.lovebrandefelt.cubeo.MergeAction;
+import se.lovebrandefelt.cubeo.MoveAction;
 import se.lovebrandefelt.cubeo.Pos;
-import se.lovebrandefelt.cubeo.RandomAI;
 
 public class GameCanvas extends Canvas {
   private static final Color BACKGROUND_COLOR = Color.DARKGREEN;
@@ -41,7 +44,7 @@ public class GameCanvas extends Canvas {
 
   public GameCanvas() {
     super();
-    ai = new RandomAI();
+    ai = new MergeAI();
     graphicsContext = getGraphicsContext2D();
     graphicsContext.setFont(Font.font(null, BOLD, fontSize));
     graphicsContext.setTextAlign(TextAlignment.CENTER);
@@ -66,10 +69,16 @@ public class GameCanvas extends Canvas {
         double squareY = startY + die.getPos().getY() * squareSize;
         if (die.getColor() == RED) {
           if ((selectedFrom == null
-              && game.getBoard().legalFroms(game.getCurrentPlayer()).contains(die.getPos())
+              && game.getBoard()
+              .legalActions(game.getCurrentPlayer())
+              .stream()
+              .anyMatch(action -> action.getFrom().equals(die.getPos()))
               && game.getResult() == null)
               || (selectedFrom != null
-              && game.getBoard().legalTos(selectedFrom).contains(die.getPos()))) {
+              && game.getBoard()
+              .legalToActions(game.getCurrentPlayer())
+              .stream()
+              .anyMatch(action -> action.getTo().equals(die.getPos())))) {
             fillDie(squareX, squareY, RED_SELECTABLE_COLOR);
             strokeDie(squareX, squareY, SELECTABLE_BORDER_COLOR);
           } else {
@@ -78,10 +87,16 @@ public class GameCanvas extends Canvas {
           drawDots(squareX, squareY, die.getDots());
         } else {
           if ((selectedFrom == null
-              && game.getBoard().legalFroms(game.getCurrentPlayer()).contains(die.getPos())
+              && game.getBoard()
+              .legalActions(game.getCurrentPlayer())
+              .stream()
+              .anyMatch(action -> action.getFrom().equals(die.getPos()))
               && game.getResult() == null)
               || (selectedFrom != null
-              && game.getBoard().legalTos(selectedFrom).contains(die.getPos()))) {
+              && game.getBoard()
+              .legalToActions(game.getCurrentPlayer())
+              .stream()
+              .anyMatch(action -> action.getTo().equals(die.getPos())))) {
             fillDie(squareX, squareY, BLACK_SELECTABLE_COLOR);
             strokeDie(squareX, squareY, SELECTABLE_BORDER_COLOR);
           } else {
@@ -90,19 +105,23 @@ public class GameCanvas extends Canvas {
           drawDots(squareX, squareY, die.getDots());
         }
       }
-      if (selectedFrom != null
-          && game.getBoard().legalMoves(game.getCurrentPlayer()).containsKey(selectedFrom)) {
-        for (Pos pos : game.getBoard().legalMoves(game.getCurrentPlayer()).get(selectedFrom)) {
-          double squareX = startX + pos.getX() * squareSize;
-          double squareY = startY + pos.getY() * squareSize;
+      if (selectedFrom != null) {
+        for (MoveAction action :
+            game.getBoard()
+                .legalMoveActions(game.getCurrentPlayer())
+                .stream()
+                .filter(action -> action.getFrom().equals(selectedFrom))
+                .collect(Collectors.toSet())) {
+          double squareX = startX + action.getTo().getX() * squareSize;
+          double squareY = startY + action.getTo().getY() * squareSize;
           fillDie(squareX, squareY, EMPTY_SELECTABLE_COLOR);
           strokeDie(squareX, squareY, SELECTABLE_BORDER_COLOR);
         }
       }
       if (selectedFrom == null && game.getResult() == null) {
-        for (Pos pos : game.getBoard().legalAddPositions(game.getCurrentPlayer())) {
-          double squareX = startX + pos.getX() * squareSize;
-          double squareY = startY + pos.getY() * squareSize;
+        for (AddAction action : game.getBoard().legalAddActions(game.getCurrentPlayer())) {
+          double squareX = startX + action.getFrom().getX() * squareSize;
+          double squareY = startY + action.getFrom().getY() * squareSize;
           fillDie(squareX, squareY, EMPTY_SELECTABLE_COLOR);
           strokeDie(squareX, squareY, SELECTABLE_BORDER_COLOR);
         }
@@ -225,38 +244,38 @@ public class GameCanvas extends Canvas {
                       (mouseEvent.getY() - startY + (squareSize - fillSquareSize) / 2)
                           / squareSize));
       if (selectedFrom == null) {
-        if (game.getBoard().legalAddPositions(game.getCurrentPlayer()).contains(pos)) {
-          game.add(pos);
-          if (game.getCurrentPlayer() != RED) {
-            ai.performTurn(game, BLACK);
+        if (game.performAction(new AddAction(game.getCurrentPlayer(), pos))) {
+          if (game.getResult() == null && game.getCurrentPlayer() != RED) {
+            ai.performAction(game);
           }
-        } else if (game.getBoard().legalFroms(game.getCurrentPlayer()).contains(pos)) {
+        } else if (game.getBoard()
+            .legalActions(game.getCurrentPlayer())
+            .stream()
+            .anyMatch(action -> action.getFrom().equals(pos))) {
           selectedFrom = pos;
         }
       } else {
-        if (game.getBoard().legalTos(selectedFrom).contains(pos)) {
-          if (!game.merge(selectedFrom, pos)) {
-            game.move(selectedFrom, pos);
-          }
-          if (game.getCurrentPlayer() != RED) {
-            ai.performTurn(game, BLACK);
+        if (game.performAction(new MergeAction(selectedFrom, pos))
+            || game.performAction(new MoveAction(selectedFrom, pos))) {
+          if (game.getResult() == null && game.getCurrentPlayer() != RED) {
+            ai.performAction(game);
           }
         }
         selectedFrom = null;
       }
-      if (game.getBoard()
-          .legalAddPositions(game.getCurrentPlayer())
-          .stream()
-          .anyMatch(this::posOutSideCanvas)
-          || game.getBoard()
-          .legalFroms(game.getCurrentPlayer())
-          .stream()
-          .anyMatch(this::posOutSideCanvas)) {
-        updateCenter();
-      }
-      draw();
-      updateTitle();
     }
+    if (game.getBoard()
+        .legalAddActions(game.getCurrentPlayer())
+        .stream()
+        .anyMatch(action -> posOutSideCanvas(action.getFrom()))
+        || game.getBoard()
+        .legalMoveActions(game.getCurrentPlayer())
+        .stream()
+        .anyMatch(action -> posOutSideCanvas(action.getFrom()))) {
+      updateCenter();
+    }
+    draw();
+    updateTitle();
   }
 
   public boolean posOutSideCanvas(Pos pos) {
