@@ -11,6 +11,7 @@ matrix:
           - $HOME/.gradle/wrapper/
   include:
     - language: android
+      sudo: false
       android:
         components:
           - tools
@@ -18,3 +19,6 @@ matrix:
           - tools
           - build-tools-26.0.2
           - android-26
+      script:
+        - ./gradlew build
+        - ./gradlew check
