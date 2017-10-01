@@ -1,9 +1,9 @@
 package se.lovebrandefelt.cubeo;
 
 import static se.lovebrandefelt.cubeo.Color.RED;
-import static se.lovebrandefelt.cubeo.GameResult.BLACK_WON_BY_7_PLUS_MERGE;
+import static se.lovebrandefelt.cubeo.GameResult.BLACK_WON_BY_10_PLUS_MERGE;
 import static se.lovebrandefelt.cubeo.GameResult.BLACK_WON_BY_STALEMATE;
-import static se.lovebrandefelt.cubeo.GameResult.RED_WON_BY_7_PLUS_MERGE;
+import static se.lovebrandefelt.cubeo.GameResult.RED_WON_BY_10_PLUS_MERGE;
 import static se.lovebrandefelt.cubeo.GameResult.RED_WON_BY_STALEMATE;
 
 public class Game {
@@ -17,7 +17,7 @@ public class Game {
   }
 
   public boolean performAction(Action action) {
-    if (board.legalActions(currentPlayer).contains(action)) {
+    if (board.legalActions(currentPlayer).contains(action) && result == null) {
       board.performAction(action);
       nextTurn();
       return true;
@@ -31,11 +31,11 @@ public class Game {
   }
 
   private void nextTurn() {
-    if (board.getDice().values().stream().anyMatch(die -> die.getDots() > 6)) {
+    if (board.getDice().values().stream().anyMatch(die -> die.getDots() > 9)) {
       if (currentPlayer == RED) {
-        result = RED_WON_BY_7_PLUS_MERGE;
+        result = RED_WON_BY_10_PLUS_MERGE;
       } else {
-        result = BLACK_WON_BY_7_PLUS_MERGE;
+        result = BLACK_WON_BY_10_PLUS_MERGE;
       }
     }
     currentPlayer = currentPlayer.next();

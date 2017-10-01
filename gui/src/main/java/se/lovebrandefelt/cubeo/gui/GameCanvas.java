@@ -181,6 +181,36 @@ public class GameCanvas extends Canvas {
         drawDot(squareX, squareY, 3, 2);
         drawDot(squareX, squareY, 3, 3);
         break;
+      case 7:
+        drawDot(squareX, squareY, 1, 1);
+        drawDot(squareX, squareY, 1, 2);
+        drawDot(squareX, squareY, 1, 3);
+        drawDot(squareX, squareY, 2, 2);
+        drawDot(squareX, squareY, 3, 1);
+        drawDot(squareX, squareY, 3, 2);
+        drawDot(squareX, squareY, 3, 3);
+        break;
+      case 8:
+        drawDot(squareX, squareY, 1, 1);
+        drawDot(squareX, squareY, 1, 2);
+        drawDot(squareX, squareY, 1, 3);
+        drawDot(squareX, squareY, 2, 1);
+        drawDot(squareX, squareY, 2, 3);
+        drawDot(squareX, squareY, 3, 1);
+        drawDot(squareX, squareY, 3, 2);
+        drawDot(squareX, squareY, 3, 3);
+        break;
+      case 9:
+        drawDot(squareX, squareY, 1, 1);
+        drawDot(squareX, squareY, 1, 2);
+        drawDot(squareX, squareY, 1, 3);
+        drawDot(squareX, squareY, 2, 1);
+        drawDot(squareX, squareY, 2, 2);
+        drawDot(squareX, squareY, 2, 3);
+        drawDot(squareX, squareY, 3, 1);
+        drawDot(squareX, squareY, 3, 2);
+        drawDot(squareX, squareY, 3, 3);
+        break;
       default:
         graphicsContext.setFill(DOT_COLOR);
         graphicsContext.fillText(
@@ -217,14 +247,14 @@ public class GameCanvas extends Canvas {
         case RED_WON_BY_STALEMATE:
           GUI.setTitle("Cubeo - RED won by stalemating BLACK");
           break;
-        case RED_WON_BY_7_PLUS_MERGE:
-          GUI.setTitle("Cubeo - RED won by merging above 6");
+        case RED_WON_BY_10_PLUS_MERGE:
+          GUI.setTitle("Cubeo - RED won by merging above 9");
           break;
         case BLACK_WON_BY_STALEMATE:
           GUI.setTitle("Cubeo - BLACK won by stalemating RED");
           break;
-        case BLACK_WON_BY_7_PLUS_MERGE:
-          GUI.setTitle("Cubeo - BLACK won by merging above 6");
+        case BLACK_WON_BY_10_PLUS_MERGE:
+          GUI.setTitle("Cubeo - BLACK won by merging above 9");
           break;
         default:
       }
