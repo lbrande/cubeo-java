@@ -2,8 +2,6 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
-      <module name="android_main" target="1.8" />
-      <module name="android_test" target="1.8" />
       <module name="cubeo_main" target="1.8" />
       <module name="cubeo_test" target="1.8" />
       <module name="gui_main" target="1.8" />

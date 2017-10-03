@@ -1,2 +1,2 @@
 include 'gui'
-include ':android'
+//include ':android'

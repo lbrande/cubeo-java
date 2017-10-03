@@ -2,23 +2,38 @@ package se.lovebrandefelt.cubeo;
 
 public class MergeAI implements AI {
   @Override
-  public void performAction(Game game, Color player) {
-    if (game.getBoard().legalMergeActions(player).size() > 0) {
+  public void performAction(Game game) {
+    if (game.legalActions().stream().filter(action -> action instanceof MergeAction).count() > 0) {
       game.performAction(
-          game.getBoard().legalMergeActions(player).stream().findAny().get());
-      if (game.getBoard().legalActions(player).size() <= 1) {
+          game.legalActions()
+              .stream()
+              .filter(action -> action instanceof MergeAction)
+              .findAny()
+              .get());
+      if (game.legalActions().size() <= 1) {
         game.undoAction();
       } else {
+        if (game.continueMergeAction()) {
+          game.performAction(game.legalActions().stream().findAny().get());
+        }
         return;
       }
     }
 
-    if (game.getBoard().legalAddActions(player).size() > 0) {
+    if (game.legalActions().stream().filter(action -> action instanceof AddAction).count() > 0) {
       game.performAction(
-          game.getBoard().legalAddActions(player).stream().findAny().get());
+          game.legalActions()
+              .stream()
+              .filter(action -> action instanceof AddAction)
+              .findAny()
+              .get());
     } else {
       game.performAction(
-          game.getBoard().legalMoveActions(player).stream().findAny().get());
+          game.legalActions()
+              .stream()
+              .filter(action -> action instanceof MoveAction)
+              .findAny()
+              .get());
     }
   }
 }

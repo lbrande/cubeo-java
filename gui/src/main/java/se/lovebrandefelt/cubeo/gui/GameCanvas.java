@@ -12,13 +12,16 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import se.lovebrandefelt.cubeo.AI;
+import se.lovebrandefelt.cubeo.Action;
 import se.lovebrandefelt.cubeo.AddAction;
 import se.lovebrandefelt.cubeo.Die;
 import se.lovebrandefelt.cubeo.Game;
 import se.lovebrandefelt.cubeo.MergeAI;
 import se.lovebrandefelt.cubeo.MergeAction;
 import se.lovebrandefelt.cubeo.MoveAction;
+import se.lovebrandefelt.cubeo.NoAction;
 import se.lovebrandefelt.cubeo.Pos;
+import se.lovebrandefelt.cubeo.ToAction;
 
 public class GameCanvas extends Canvas {
   private static final Color BACKGROUND_COLOR = Color.DARKGREEN;
@@ -51,7 +54,7 @@ public class GameCanvas extends Canvas {
     graphicsContext.setTextBaseline(VPos.CENTER);
   }
 
-  public void setGame(Game game) {
+  void setGame(Game game) {
     this.game = game;
     setWidth(12 * squareSize);
     setHeight(12 * squareSize);
@@ -60,7 +63,7 @@ public class GameCanvas extends Canvas {
     updateTitle();
   }
 
-  public void draw() {
+  private void draw() {
     graphicsContext.setFill(BACKGROUND_COLOR);
     graphicsContext.fillRect(0, 0, getWidth(), getHeight());
     if (game != null) {
@@ -69,16 +72,19 @@ public class GameCanvas extends Canvas {
         double squareY = startY + die.getPos().getY() * squareSize;
         if (die.getColor() == RED) {
           if ((selectedFrom == null
-              && game.getBoard()
-              .legalActions(game.getCurrentPlayer())
+              && game.legalActions()
               .stream()
               .anyMatch(action -> action.getFrom().equals(die.getPos()))
               && game.getResult() == null)
               || (selectedFrom != null
-              && game.getBoard()
-              .legalToActions(game.getCurrentPlayer())
+              && game.legalActions()
               .stream()
-              .anyMatch(action -> action.getTo().equals(die.getPos())))) {
+              .anyMatch(
+                  action ->
+                      (action instanceof ToAction
+                          && ((ToAction) action).getTo().equals(die.getPos()))
+                          || (action instanceof NoAction
+                          && action.getFrom().equals(die.getPos()))))) {
             fillDie(squareX, squareY, RED_SELECTABLE_COLOR);
             strokeDie(squareX, squareY, SELECTABLE_BORDER_COLOR);
           } else {
@@ -87,16 +93,17 @@ public class GameCanvas extends Canvas {
           drawDots(squareX, squareY, die.getDots());
         } else {
           if ((selectedFrom == null
-              && game.getBoard()
-              .legalActions(game.getCurrentPlayer())
+              && game.legalActions()
               .stream()
               .anyMatch(action -> action.getFrom().equals(die.getPos()))
               && game.getResult() == null)
               || (selectedFrom != null
-              && game.getBoard()
-              .legalToActions(game.getCurrentPlayer())
+              && game.legalActions()
               .stream()
-              .anyMatch(action -> action.getTo().equals(die.getPos())))) {
+              .anyMatch(
+                  action ->
+                      action instanceof ToAction
+                          && ((ToAction) action).getTo().equals(die.getPos())))) {
             fillDie(squareX, squareY, BLACK_SELECTABLE_COLOR);
             strokeDie(squareX, squareY, SELECTABLE_BORDER_COLOR);
           } else {
@@ -106,20 +113,24 @@ public class GameCanvas extends Canvas {
         }
       }
       if (selectedFrom != null) {
-        for (MoveAction action :
-            game.getBoard()
-                .legalMoveActions(game.getCurrentPlayer())
+        for (Action action :
+            game.legalActions()
                 .stream()
-                .filter(action -> action.getFrom().equals(selectedFrom))
+                .filter(
+                    action -> action instanceof MoveAction && action.getFrom().equals(selectedFrom))
                 .collect(Collectors.toSet())) {
-          double squareX = startX + action.getTo().getX() * squareSize;
-          double squareY = startY + action.getTo().getY() * squareSize;
+          double squareX = startX + ((MoveAction) action).getTo().getX() * squareSize;
+          double squareY = startY + ((MoveAction) action).getTo().getY() * squareSize;
           fillDie(squareX, squareY, EMPTY_SELECTABLE_COLOR);
           strokeDie(squareX, squareY, SELECTABLE_BORDER_COLOR);
         }
       }
       if (selectedFrom == null && game.getResult() == null) {
-        for (AddAction action : game.getBoard().legalAddActions(game.getCurrentPlayer())) {
+        for (Action action :
+            game.legalActions()
+                .stream()
+                .filter(action -> action instanceof AddAction)
+                .collect(Collectors.toSet())) {
           double squareX = startX + action.getFrom().getX() * squareSize;
           double squareY = startY + action.getFrom().getY() * squareSize;
           fillDie(squareX, squareY, EMPTY_SELECTABLE_COLOR);
@@ -134,19 +145,19 @@ public class GameCanvas extends Canvas {
     }
   }
 
-  public void fillDie(double squareX, double squareY, Color color) {
+  private void fillDie(double squareX, double squareY, Color color) {
     graphicsContext.setFill(color);
     graphicsContext.fillRoundRect(
         squareX, squareY, fillSquareSize, fillSquareSize, fillSquareSize / 3, fillSquareSize / 3);
   }
 
-  public void strokeDie(double squareX, double squareY, Color color) {
+  private void strokeDie(double squareX, double squareY, Color color) {
     graphicsContext.setStroke(color);
     graphicsContext.strokeRoundRect(
         squareX, squareY, fillSquareSize, fillSquareSize, fillSquareSize / 3, fillSquareSize / 3);
   }
 
-  public void drawDots(double squareX, double squareY, int dots) {
+  private void drawDots(double squareX, double squareY, int dots) {
     switch (dots) {
       case 1:
         drawDot(squareX, squareY, 2, 2);
@@ -218,7 +229,7 @@ public class GameCanvas extends Canvas {
     }
   }
 
-  public void drawDot(double squareX, double squareY, int dotX, int dotY) {
+  private void drawDot(double squareX, double squareY, int dotX, int dotY) {
     graphicsContext.setFill(DOT_COLOR);
     graphicsContext.fillOval(
         squareX + fillSquareSize * dotX / 4 - dotSize / 2,
@@ -227,7 +238,7 @@ public class GameCanvas extends Canvas {
         dotSize);
   }
 
-  public void updateCenter() {
+  void updateCenter() {
     int width = game.getBoard().getBottomRight().getX() + 1 - game.getBoard().getTopLeft().getX();
     startX =
         (getWidth() - width * squareSize + squareSize - fillSquareSize) / 2
@@ -239,7 +250,7 @@ public class GameCanvas extends Canvas {
     draw();
   }
 
-  public void updateTitle() {
+  private void updateTitle() {
     if (game.getResult() == null) {
       GUI.setTitle("Cubeo - " + game.getCurrentPlayer() + "'s turn");
     } else {
@@ -247,21 +258,21 @@ public class GameCanvas extends Canvas {
         case RED_WON_BY_STALEMATE:
           GUI.setTitle("Cubeo - RED won by stalemating BLACK");
           break;
-        case RED_WON_BY_10_PLUS_MERGE:
-          GUI.setTitle("Cubeo - RED won by merging above 9");
+        case RED_WON_BY_7_PLUS_MERGE:
+          GUI.setTitle("Cubeo - RED won by merging above 6");
           break;
         case BLACK_WON_BY_STALEMATE:
           GUI.setTitle("Cubeo - BLACK won by stalemating RED");
           break;
-        case BLACK_WON_BY_10_PLUS_MERGE:
-          GUI.setTitle("Cubeo - BLACK won by merging above 9");
+        case BLACK_WON_BY_7_PLUS_MERGE:
+          GUI.setTitle("Cubeo - BLACK won by merging above 6");
           break;
         default:
       }
     }
   }
 
-  public void onClick(MouseEvent mouseEvent) {
+  void onClick(MouseEvent mouseEvent) {
     if (game.getResult() == null) {
       Pos pos =
           new Pos(
@@ -276,39 +287,34 @@ public class GameCanvas extends Canvas {
       if (selectedFrom == null) {
         if (game.performAction(new AddAction(game.getCurrentPlayer(), pos))) {
           if (game.getResult() == null && game.getCurrentPlayer() != RED) {
-            ai.performAction(game, game.getCurrentPlayer());
+            ai.performAction(game);
           }
-        } else if (game.getBoard()
-            .legalActions(game.getCurrentPlayer())
-            .stream()
-            .anyMatch(action -> action.getFrom().equals(pos))) {
+        } else if (game.legalActions().stream().anyMatch(action -> action.getFrom().equals(pos))) {
           selectedFrom = pos;
         }
       } else {
         if (game.performAction(new MergeAction(selectedFrom, pos))
-            || game.performAction(new MoveAction(selectedFrom, pos))) {
+            || game.performAction(new MoveAction(selectedFrom, pos))
+            || game.performAction(new NoAction(selectedFrom))) {
           if (game.getResult() == null && game.getCurrentPlayer() != RED) {
-            ai.performAction(game, game.getCurrentPlayer());
+            ai.performAction(game);
           }
         }
-        selectedFrom = null;
+        if (game.continueMergeAction()) {
+          selectedFrom = ((MergeAction) game.getBoard().getHistory().peek()).getTo();
+        } else {
+          selectedFrom = null;
+        }
       }
     }
-    if (game.getBoard()
-        .legalAddActions(game.getCurrentPlayer())
-        .stream()
-        .anyMatch(action -> posOutSideCanvas(action.getFrom()))
-        || game.getBoard()
-        .legalMoveActions(game.getCurrentPlayer())
-        .stream()
-        .anyMatch(action -> posOutSideCanvas(action.getFrom()))) {
+    if (game.legalActions().stream().anyMatch(action -> posOutSideCanvas(action.getFrom()))) {
       updateCenter();
     }
     draw();
     updateTitle();
   }
 
-  public boolean posOutSideCanvas(Pos pos) {
+  private boolean posOutSideCanvas(Pos pos) {
     double squareX = startX - (squareSize - fillSquareSize) / 2 + pos.getX() * squareSize;
     double squareY = startY - (squareSize - fillSquareSize) / 2 + pos.getY() * squareSize;
     return squareX < 0

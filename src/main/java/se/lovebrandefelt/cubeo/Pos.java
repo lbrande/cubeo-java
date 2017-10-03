@@ -17,7 +17,7 @@ public class Pos {
     return y;
   }
 
-  public Pos offsetBy(Pos offset) {
+  Pos offsetBy(Pos offset) {
     return new Pos(x + offset.x, y + offset.y);
   }
 

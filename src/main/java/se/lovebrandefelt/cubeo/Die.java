@@ -5,11 +5,11 @@ public class Die {
   private Color color;
   private Pos pos;
 
-  public Die(Color color, Pos pos) {
+  Die(Color color, Pos pos) {
     this(1, color, pos);
   }
 
-  public Die(int dots, Color color, Pos pos) {
+  private Die(int dots, Color color, Pos pos) {
     this.dots = dots;
     this.color = color;
     this.pos = pos;
@@ -19,7 +19,7 @@ public class Die {
     return dots;
   }
 
-  public void setDots(int dots) {
+  void setDots(int dots) {
     this.dots = dots;
   }
 
@@ -27,15 +27,11 @@ public class Die {
     return color;
   }
 
-  public void setColor(Color color) {
-    this.color = color;
-  }
-
   public Pos getPos() {
     return pos;
   }
 
-  public void setPos(Pos pos) {
+  void setPos(Pos pos) {
     this.pos = pos;
   }
 }

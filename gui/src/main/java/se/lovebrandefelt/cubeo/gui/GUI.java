@@ -15,7 +15,7 @@ public class GUI extends Application {
     launch(args);
   }
 
-  public static void setTitle(String title) {
+  static void setTitle(String title) {
     stage.setTitle(title);
   }
 
