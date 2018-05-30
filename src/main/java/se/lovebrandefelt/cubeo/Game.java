@@ -13,7 +13,6 @@ public class Game {
   private Board board;
   private Color currentPlayer;
   private GameResult result;
-  private Set<Action> continueMergeActions;
 
   public Game() {
     board = new Board();
@@ -21,40 +20,13 @@ public class Game {
   }
 
   public Set<Action> legalActions() {
-    if (continueMergeAction()) {
-      return continueMergeActions;
-    }
     return board.legalActions(currentPlayer);
   }
 
   public boolean performAction(Action action) {
-    if ((continueMergeAction() && continueMergeActions.contains(action))
-        || (!continueMergeAction()
-        && board.legalActions(currentPlayer).contains(action)
-        && result == null)) {
+    if (board.legalActions(currentPlayer).contains(action) && result == null) {
       board.performAction(action);
-      if (action instanceof MergeAction
-          && board
-          .legalActions(currentPlayer)
-          .stream()
-          .anyMatch(
-              moveAction ->
-                  moveAction instanceof MoveAction
-                      && moveAction.getFrom().equals(((MergeAction) action).getTo()))) {
-        continueMergeActions =
-            board
-                .legalActions(currentPlayer)
-                .stream()
-                .filter(
-                    moveAction ->
-                        moveAction instanceof MoveAction
-                            && moveAction.getFrom().equals(((MergeAction) action).getTo()))
-                .collect(Collectors.toSet());
-        continueMergeActions.add(new NoAction(((MergeAction) action).getTo()));
-      } else {
-        continueMergeActions = null;
-        nextTurn();
-      }
+      nextTurn();
       return true;
     }
     return false;
@@ -93,9 +65,5 @@ public class Game {
 
   public GameResult getResult() {
     return result;
-  }
-
-  public boolean continueMergeAction() {
-    return continueMergeActions != null;
   }
 }

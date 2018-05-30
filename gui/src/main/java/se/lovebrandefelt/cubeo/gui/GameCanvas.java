@@ -33,7 +33,7 @@ public class GameCanvas extends Canvas {
   private static final Color BLACK_SELECTABLE_COLOR = BLACK_COLOR.brighter();
   private static final Color SELECTABLE_BORDER_COLOR = Color.LIGHTYELLOW;
   private static final Color SELECTED_BORDER_COLOR = Color.YELLOW;
-  private static final double squareSize = 75;
+  private static final double squareSize = 60;
   private static final double fillSquareSize = squareSize - 4;
   private static final double dotSize = fillSquareSize / 5;
   private static final double fontSize = fillSquareSize * 2 / 3;
@@ -72,19 +72,19 @@ public class GameCanvas extends Canvas {
         double squareY = startY + die.getPos().getY() * squareSize;
         if (die.getColor() == RED) {
           if ((selectedFrom == null
-              && game.legalActions()
-              .stream()
-              .anyMatch(action -> action.getFrom().equals(die.getPos()))
-              && game.getResult() == null)
+                  && game.legalActions()
+                      .stream()
+                      .anyMatch(action -> action.getFrom().equals(die.getPos()))
+                  && game.getResult() == null)
               || (selectedFrom != null
-              && game.legalActions()
-              .stream()
-              .anyMatch(
-                  action ->
-                      (action instanceof ToAction
-                          && ((ToAction) action).getTo().equals(die.getPos()))
-                          || (action instanceof NoAction
-                          && action.getFrom().equals(die.getPos()))))) {
+                  && game.legalActions()
+                      .stream()
+                      .anyMatch(
+                          action ->
+                              (action instanceof ToAction
+                                      && ((ToAction) action).getTo().equals(die.getPos()))
+                                  || (action instanceof NoAction
+                                      && action.getFrom().equals(die.getPos()))))) {
             fillDie(squareX, squareY, RED_SELECTABLE_COLOR);
             strokeDie(squareX, squareY, SELECTABLE_BORDER_COLOR);
           } else {
@@ -93,17 +93,17 @@ public class GameCanvas extends Canvas {
           drawDots(squareX, squareY, die.getDots());
         } else {
           if ((selectedFrom == null
-              && game.legalActions()
-              .stream()
-              .anyMatch(action -> action.getFrom().equals(die.getPos()))
-              && game.getResult() == null)
+                  && game.legalActions()
+                      .stream()
+                      .anyMatch(action -> action.getFrom().equals(die.getPos()))
+                  && game.getResult() == null)
               || (selectedFrom != null
-              && game.legalActions()
-              .stream()
-              .anyMatch(
-                  action ->
-                      action instanceof ToAction
-                          && ((ToAction) action).getTo().equals(die.getPos())))) {
+                  && game.legalActions()
+                      .stream()
+                      .anyMatch(
+                          action ->
+                              action instanceof ToAction
+                                  && ((ToAction) action).getTo().equals(die.getPos())))) {
             fillDie(squareX, squareY, BLACK_SELECTABLE_COLOR);
             strokeDie(squareX, squareY, SELECTABLE_BORDER_COLOR);
           } else {
@@ -300,11 +300,7 @@ public class GameCanvas extends Canvas {
             ai.performAction(game);
           }
         }
-        if (game.continueMergeAction()) {
-          selectedFrom = ((MergeAction) game.getBoard().getHistory().peek()).getTo();
-        } else {
-          selectedFrom = null;
-        }
+        selectedFrom = null;
       }
     }
     if (game.legalActions().stream().anyMatch(action -> posOutSideCanvas(action.getFrom()))) {

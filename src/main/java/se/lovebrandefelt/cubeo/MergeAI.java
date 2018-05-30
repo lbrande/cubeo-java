@@ -13,9 +13,6 @@ public class MergeAI implements AI {
       if (game.legalActions().size() <= 1) {
         game.undoAction();
       } else {
-        if (game.continueMergeAction()) {
-          game.performAction(game.legalActions().stream().findAny().get());
-        }
         return;
       }
     }

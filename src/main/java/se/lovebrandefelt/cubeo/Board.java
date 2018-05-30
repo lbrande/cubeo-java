@@ -66,7 +66,7 @@ public class Board {
     return reachedPositions.size() == otherPositions.size();
   }
 
-  private Set<AddAction> legalAddActions(Color color) {
+  Set<AddAction> legalAddActions(Color color) {
     if (dice.values().stream().filter(die -> die.getColor() == color).count() < 6) {
       return dice.values()
           .stream()
@@ -88,7 +88,7 @@ public class Board {
     return new HashSet<>();
   }
 
-  private Set<MergeAction> legalMergeActions(Color color) {
+  Set<MergeAction> legalMergeActions(Color color) {
     Set<MergeAction> legalMerges = new HashSet<>();
     dice.values()
         .stream()
@@ -109,7 +109,7 @@ public class Board {
     return legalMerges;
   }
 
-  private Set<MoveAction> legalMoveActions(Color color) {
+  Set<MoveAction> legalMoveActions(Color color) {
     Set<MoveAction> legalMoves = new HashSet<>();
     dice.values()
         .stream()
