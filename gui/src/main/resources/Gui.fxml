@@ -6,7 +6,7 @@
 <?import se.lovebrandefelt.cubeo.gui.GameCanvas?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             xmlns="http://javafx.com/javafx"
-            fx:controller="se.lovebrandefelt.cubeo.gui.GUIController">
+            fx:controller="se.lovebrandefelt.cubeo.gui.GuiController">
 
     <top>
         <ToolBar>

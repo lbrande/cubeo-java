@@ -11,13 +11,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
-import se.lovebrandefelt.cubeo.AI;
 import se.lovebrandefelt.cubeo.Action;
 import se.lovebrandefelt.cubeo.AddAction;
+import se.lovebrandefelt.cubeo.Ai;
 import se.lovebrandefelt.cubeo.Die;
 import se.lovebrandefelt.cubeo.Game;
-import se.lovebrandefelt.cubeo.MergeAI;
 import se.lovebrandefelt.cubeo.MergeAction;
+import se.lovebrandefelt.cubeo.MergeAi;
 import se.lovebrandefelt.cubeo.MoveAction;
 import se.lovebrandefelt.cubeo.NoAction;
 import se.lovebrandefelt.cubeo.Pos;
@@ -39,15 +39,18 @@ public class GameCanvas extends Canvas {
   private static final double fontSize = fillSquareSize * 2 / 3;
 
   private Game game;
-  private AI ai;
+  private Ai ai;
   private Pos selectedFrom;
   private double startX;
   private double startY;
   private GraphicsContext graphicsContext;
 
+  /**
+   * Constructs a GameCanvas.
+   */
   public GameCanvas() {
     super();
-    ai = new MergeAI();
+    ai = new MergeAi();
     graphicsContext = getGraphicsContext2D();
     graphicsContext.setFont(Font.font(null, BOLD, fontSize));
     graphicsContext.setTextAlign(TextAlignment.CENTER);
@@ -252,20 +255,20 @@ public class GameCanvas extends Canvas {
 
   private void updateTitle() {
     if (game.getResult() == null) {
-      GUI.setTitle("Cubeo - " + game.getCurrentPlayer() + "'s turn");
+      Gui.setTitle("Cubeo - " + game.getCurrentPlayer() + "'s turn");
     } else {
       switch (game.getResult()) {
         case RED_WON_BY_STALEMATE:
-          GUI.setTitle("Cubeo - RED won by stalemating BLACK");
+          Gui.setTitle("Cubeo - RED won by stalemating BLACK");
           break;
         case RED_WON_BY_7_PLUS_MERGE:
-          GUI.setTitle("Cubeo - RED won by merging above 6");
+          Gui.setTitle("Cubeo - RED won by merging above 6");
           break;
         case BLACK_WON_BY_STALEMATE:
-          GUI.setTitle("Cubeo - BLACK won by stalemating RED");
+          Gui.setTitle("Cubeo - BLACK won by stalemating RED");
           break;
         case BLACK_WON_BY_7_PLUS_MERGE:
-          GUI.setTitle("Cubeo - BLACK won by merging above 6");
+          Gui.setTitle("Cubeo - BLACK won by merging above 6");
           break;
         default:
       }

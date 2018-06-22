@@ -8,7 +8,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import se.lovebrandefelt.cubeo.Game;
 
-public class GUI extends Application {
+public class Gui extends Application {
   private static Stage stage;
 
   public static void main(String[] args) {
@@ -22,7 +22,7 @@ public class GUI extends Application {
   @Override
   public void start(Stage primaryStage) throws IOException {
     stage = primaryStage;
-    Parent root = FXMLLoader.load(getClass().getResource("/GUI.fxml"));
+    Parent root = FXMLLoader.load(getClass().getResource("/Gui.fxml"));
     Scene scene = new Scene(root);
     GameCanvas canvas = (GameCanvas) scene.lookup("#canvas");
     canvas.setGame(new Game());

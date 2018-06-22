@@ -22,6 +22,12 @@ public class Game {
     return board.legalActions(currentPlayer);
   }
 
+  /**
+   * Performs an action if possible.
+   *
+   * @param action action to perform
+   * @return whether the action was performed
+   */
   public boolean performAction(Action action) {
     if (board.legalActions(currentPlayer).contains(action) && result == null) {
       board.performAction(action);

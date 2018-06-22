@@ -1,21 +1,20 @@
 package se.lovebrandefelt.cubeo.gui;
 
-import javafx.event.ActionEvent;
 import javafx.scene.input.MouseEvent;
 import se.lovebrandefelt.cubeo.Game;
 
-public class GUIController {
+public class GuiController {
   public GameCanvas canvas;
 
   public void canvasClicked(MouseEvent mouseEvent) {
     canvas.onClick(mouseEvent);
   }
 
-  public void newGame(ActionEvent actionEvent) {
+  public void newGame() {
     canvas.setGame(new Game());
   }
 
-  public void centerBoard(ActionEvent actionEvent) {
+  public void centerBoard() {
     canvas.updateCenter();
   }
 }

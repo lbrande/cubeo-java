@@ -1,5 +1,5 @@
 package se.lovebrandefelt.cubeo;
 
-public interface AI {
+public interface Ai {
   void performAction(Game game);
 }

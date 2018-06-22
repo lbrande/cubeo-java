@@ -77,11 +77,11 @@ public class Board {
               pos ->
                   !dice.containsKey(pos)
                       && adjacentPositions(pos)
-                      .stream()
-                      .noneMatch(
-                          adjacentPos ->
-                              dice.containsKey(adjacentPos)
-                                  && dice.get(adjacentPos).getColor() != color))
+                          .stream()
+                          .noneMatch(
+                              adjacentPos ->
+                                  dice.containsKey(adjacentPos)
+                                      && dice.get(adjacentPos).getColor() != color))
           .map(pos -> new AddAction(color, pos))
           .collect(Collectors.toSet());
     }
@@ -154,24 +154,24 @@ public class Board {
     boolean northWestExists = otherPositions.contains(northWest);
     Pos north = pos.offsetBy(new Pos(0, -1));
     boolean northExists = otherPositions.contains(north);
-    Pos northEast = pos.offsetBy(new Pos(1, -1));
-    boolean northEastExists = otherPositions.contains(northEast);
     Pos west = pos.offsetBy(new Pos(-1, 0));
     boolean westExists = otherPositions.contains(west);
-    Pos east = pos.offsetBy(new Pos(1, 0));
-    boolean eastExists = otherPositions.contains(east);
-    Pos southWest = pos.offsetBy(new Pos(-1, 1));
-    boolean southWestExists = otherPositions.contains(southWest);
-    Pos south = pos.offsetBy(new Pos(0, 1));
-    boolean southExists = otherPositions.contains(south);
-    Pos southEast = pos.offsetBy(new Pos(1, 1));
-    boolean southEastExists = otherPositions.contains(southEast);
     if (!northWestExists && (northExists != westExists)) {
       legalDestinations.add(northWest);
     }
+    Pos east = pos.offsetBy(new Pos(1, 0));
+    boolean eastExists = otherPositions.contains(east);
+    Pos northEast = pos.offsetBy(new Pos(1, -1));
+    boolean northEastExists = otherPositions.contains(northEast);
     if (!northEastExists && (northExists != eastExists)) {
       legalDestinations.add(northEast);
     }
+    Pos south = pos.offsetBy(new Pos(0, 1));
+    boolean southExists = otherPositions.contains(south);
+    Pos southWest = pos.offsetBy(new Pos(-1, 1));
+    boolean southWestExists = otherPositions.contains(southWest);
+    Pos southEast = pos.offsetBy(new Pos(1, 1));
+    boolean southEastExists = otherPositions.contains(southEast);
     if (!southWestExists && (southExists != westExists)) {
       legalDestinations.add(southWest);
     }
@@ -181,7 +181,7 @@ public class Board {
     if (!northExists && ((northWestExists && westExists) || (northEastExists && eastExists))) {
       legalDestinations.add(north);
     }
-    if (!southExists && ((southWestExists && westExists) || (southEastExists && southEastExists))) {
+    if (!southExists && ((southWestExists && westExists) || (southEastExists && eastExists))) {
       legalDestinations.add(south);
     }
     if (!westExists && ((northWestExists && northExists) || (southWestExists && southExists))) {
@@ -220,9 +220,5 @@ public class Board {
 
   public Pos getBottomRight() {
     return bottomRight;
-  }
-
-  public Stack<Action> getHistory() {
-    return history;
   }
 }
