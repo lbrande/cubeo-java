@@ -3,34 +3,18 @@ package se.lovebrandefelt.cubeo;
 public class MergeAI implements AI {
   @Override
   public void performAction(Game game) {
-    if (game.legalActions().stream().filter(action -> action instanceof MergeAction).count() > 0) {
-      game.performAction(
-          game.legalActions()
-              .stream()
-              .filter(action -> action instanceof MergeAction)
-              .findAny()
-              .get());
+    game.legalActions().stream().filter(action -> action instanceof MergeAction).findAny()
+        .ifPresentOrElse(action -> {
+      game.performAction(action);
       if (game.legalActions().size() <= 1) {
         game.undoAction();
-      } else {
-        return;
+        game.legalActions().stream().filter(action1 -> action1 instanceof AddAction).findAny()
+            .ifPresentOrElse(game::performAction, () -> game.legalActions().stream().filter
+                (action1 -> action1 instanceof MoveAction).findAny().ifPresent
+                (game::performAction));
       }
-    }
-
-    if (game.legalActions().stream().filter(action -> action instanceof AddAction).count() > 0) {
-      game.performAction(
-          game.legalActions()
-              .stream()
-              .filter(action -> action instanceof AddAction)
-              .findAny()
-              .get());
-    } else {
-      game.performAction(
-          game.legalActions()
-              .stream()
-              .filter(action -> action instanceof MoveAction)
-              .findAny()
-              .get());
-    }
+    }, () -> game.legalActions().stream().filter(action1 -> action1 instanceof AddAction).findAny
+            ().ifPresentOrElse(game::performAction, () -> game.legalActions().stream().filter
+            (action1 -> action1 instanceof MoveAction).findAny().ifPresent(game::performAction)));
   }
 }

@@ -1,55 +1,39 @@
 version '1.0-SNAPSHOT'
 
-buildscript {
-    repositories {
-        mavenCentral()
-        jcenter()
-        maven {
-            url "https://maven.google.com"
-        }
-    }
-    ext {
-        junitVersion = '5.0.0-RC3'
-        junitPlatformVersion = '1.0.0-RC3'
-    }
-    dependencies {
-        classpath group: 'org.junit.platform', name: 'junit-platform-gradle-plugin', version: junitPlatformVersion
-    }
-}
-
-apply plugin: 'java'
-apply plugin: 'org.junit.platform.gradle.plugin'
-
-sourceCompatibility = 1.10
-
-dependencies {
-    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitVersion
-    testCompile group: 'org.junit.platform', name: 'junit-platform-runner', version: junitPlatformVersion
-    testRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: junitVersion
-}
-
 allprojects {
     repositories {
         mavenCentral()
-        jcenter()
-        maven {
-            url "https://maven.google.com"
-        }
     }
 
     apply plugin: 'checkstyle'
 
     checkstyle {
-        toolVersion "8.2"
+        toolVersion "8.10.1"
+    }
+
+    apply plugin: 'java'
+
+    sourceCompatibility = 1.10
+
+    dependencies {
+        testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.2.0'
+        testRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.2.0'
+    }
+
+    test {
+        useJUnitPlatform()
     }
 }
 
-jar.dependsOn 'javadoc'
-
-jar {
-    from javadoc.destinationDir
+subprojects {
+    dependencies {
+        compile rootProject
+    }
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.6'
+javadoc.options.addBooleanOption('html5', true)
+
+jar {
+    dependsOn 'javadoc'
+    from javadoc.destinationDir
 }

@@ -1,9 +1,8 @@
 package se.lovebrandefelt.cubeo;
 
 public class RandomAI implements AI {
-
   @Override
   public void performAction(Game game) {
-    game.performAction(game.legalActions().stream().findAny().get());
+    game.legalActions().stream().findAny().ifPresent(game::performAction);
   }
 }

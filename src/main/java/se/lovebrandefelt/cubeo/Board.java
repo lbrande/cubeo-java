@@ -18,7 +18,7 @@ public class Board {
   private Pos bottomRight;
   private Stack<Action> history;
 
-  public Board() {
+  Board() {
     dice = new HashMap<>();
     history = new Stack<>();
     performAction(new AddAction(RED, new Pos(0, 0)));

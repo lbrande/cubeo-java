@@ -7,7 +7,6 @@ import static se.lovebrandefelt.cubeo.GameResult.RED_WON_BY_7_PLUS_MERGE;
 import static se.lovebrandefelt.cubeo.GameResult.RED_WON_BY_STALEMATE;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Game {
   private Board board;
