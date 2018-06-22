@@ -9,16 +9,17 @@ matrix:
         directories:
           - $HOME/.gradle/caches/
           - $HOME/.gradle/wrapper/
-  include:
-    - language: android
-      sudo: false
-      android:
-        components:
-          - tools
-          - platform-tools
-          - tools
-          - build-tools-26.0.2
-          - android-26
-      script:
-        - ./gradlew build
-        - ./gradlew check
+      jdk: oraclejdk10
+#  include:
+#    - language: android
+#      sudo: false
+#      android:
+#        components:
+#          - tools
+#          - platform-tools
+#          - tools
+#          - build-tools-26.0.2
+#          - android-26
+#      script:
+#        - ./gradlew build
+#        - ./gradlew check
